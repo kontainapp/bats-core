@@ -178,4 +178,6 @@ while IFS= read -r line; do
   esac
 done
 
+if  [ $failures -eq 0 ] ; then set_color 2 bold; else set_color 1 bold; fi
 summary
+clear_color
