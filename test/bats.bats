@@ -799,16 +799,20 @@ EOF
 
 @test "test content of 'command' variable" {
   run bats -v
-  [[ "${command[@]}" == "bats -v" ]] && [[ "$output" == Bats* ]]
+  [[ "${command[*]}" == "bats -v" ]] && [[ "$output" == Bats* ]]
 }
 
 @test "test color in summary" {
-  # use one of the tests in this file
-  run bats --pretty --filter 'no arguments' $BATS_TEST_FILENAME
-  # Save results for analysis on failure, and check for opening and closing escape sequences
+  # pick up some test (no matter which), and run in with color in summary
+  run bats --pretty --filter 'no arguments' "$BATS_TEST_FILENAME"
+  # Save results for analysis on failure
   echo output content:
   echo "$output" | od -c
-  echo "$output" | grep failures | grep  -q $'0 failures\n\033\[0m'
-  echo "$output" |  grep test | grep -q $'\033\[32;1m\n1 test'
+
+  # Now check for opening and closing escape sequences
+  # shellcheck disable=SC2086
+  echo $output | grep -q $'0 failures.\033\[0m'
+  # shellcheck disable=SC2086
+  echo $output | grep -q $'\033\[32;1m.1 test'
 }
 
